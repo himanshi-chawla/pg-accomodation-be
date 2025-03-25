@@ -30,9 +30,9 @@ public class UserInfoService implements UserDetailsService {
                 return new ResponseEntity<>("User already exists!", HttpStatus.BAD_REQUEST);
             }
             User user = mapUserDtoToUser(userDto);
-            userRepository.save(user);
+            user = userRepository.save(user);
             //if not then signup the user i.e. add the user to the database
-            return new ResponseEntity<>("User data saved successfully!", HttpStatus.CREATED);
+            return new ResponseEntity<>(user, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>("Error occurred while saving user data.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
