@@ -1,8 +1,7 @@
 package com.app.pg_accomodation.service;
 
-import com.app.pg_accomodation.entity.User;
-import com.app.pg_accomodation.model.UserDto;
-import com.app.pg_accomodation.repository.UserRepository;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +11,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import com.app.pg_accomodation.entity.User;
+import com.app.pg_accomodation.model.UserDto;
+import com.app.pg_accomodation.repository.UserRepository;
 
 @Service
 public class UserInfoService implements UserDetailsService {
@@ -43,26 +44,28 @@ public class UserInfoService implements UserDetailsService {
      * @param username
      * @return
      */
-    @Override
-    public UserDetails loadUserByUsername(String username) {
-        Optional<User> userDetail = userRepository.findByEmail(username); // Assuming 'email' is used as username
+   @Override
+public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
+    Optional<User> userDetail = userRepository.findByEmail(usernameOrEmail)
+            .or(() -> userRepository.findByUsername(usernameOrEmail)); // Check both fields
 
-        // Converting User to UserDetails
-        return userDetail.map(UserInfoDetails::new)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
-    }
+    return userDetail.map(UserInfoDetails::new)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found: " + usernameOrEmail));
+}
+
 
     private User mapUserDtoToUser(UserDto userDto){
-        User user = new User();
-        user.setUsername(userDto.getUsername());
-        user.setEmail(userDto.getEmail());
-        user.setRole(userDto.getRole());
-        user.setFirstName(userDto.getFirstName());
-        user.setLastName(userDto.getLastName());
-        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        user.setPhoneNumber(userDto.getPhoneNumber());
-        return user;
-    }
+    User user = new User();
+    user.setUsername(userDto.getUsername());
+    user.setEmail(userDto.getEmail());
+    user.setRole(userDto.getRole() != null ? userDto.getRole() : "USER"); // Default role
+    user.setFirstName(userDto.getFirstName());
+    user.setLastName(userDto.getLastName());
+    user.setPassword(userDto.getPassword() != null ? passwordEncoder.encode(userDto.getPassword()) : null);
+    user.setPhoneNumber(userDto.getPhoneNumber());
+    return user;
+}
+
 
     public UserDetails loadUserByEmail(String email) throws UsernameNotFoundException {
         Optional<User> user = userRepository.findByEmail(email);
