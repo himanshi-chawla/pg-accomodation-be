@@ -1,10 +1,5 @@
 package com.app.pg_accomodation.controller;
 
-import com.app.pg_accomodation.model.AuthRequest;
-import com.app.pg_accomodation.model.UserDto;
-import com.app.pg_accomodation.service.JwtService;
-import com.app.pg_accomodation.service.UserInfoService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,8 +8,21 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.app.pg_accomodation.model.AuthRequest;
+import com.app.pg_accomodation.model.UserDto;
+import com.app.pg_accomodation.service.JwtService;
+import com.app.pg_accomodation.service.UserInfoService;
+
+import lombok.extern.slf4j.Slf4j;
+
+@CrossOrigin(origins = "http://127.0.0.1:5501")
 @Slf4j
 @RestController
 @RequestMapping(value = "/auth")
