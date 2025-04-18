@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserDto {
-    private String id;
+    private Long id;
     private String firstName;
     private String username;
     private String lastName;
@@ -18,4 +18,15 @@ public class UserDto {
     private String password;
     private String role;
     private String phoneNumber;
+
+
+        public UserDto(String firstName, String username, String lastName, String email, String password, String role, String phoneNumber) {
+        this.firstName = firstName;
+        this.username = username;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.phoneNumber = phoneNumber;
+    }
 }

@@ -27,10 +27,10 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping(value = "/auth")
 public class AuthenticationController {
-
+   
     @Autowired
-    UserInfoService userInfoService;
-
+    private UserInfoService userService;
+    
     @Autowired
     private JwtService jwtService;
 
@@ -38,12 +38,28 @@ public class AuthenticationController {
     private AuthenticationManager authenticationManager;
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody UserDto userDto){
-        // invoke the service methods to implement logic to signup the user i.e. add the user
-        // to the database
-        return userInfoService.signup((userDto));
-    }
+    public ResponseEntity<?> register(@RequestBody UserDto userDto) {
+    log.info("User Registration Request: {}", userDto);
+    try{
+        userService.registerUser(userDto);  // Save user first
 
+        // 🔹 Auto-login after signup
+        Authentication authentication = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(userDto.getEmail(), userDto.getPassword())
+        );
+
+        if (authentication.isAuthenticated()) {
+            String token = jwtService.generateToken(userDto.getEmail());
+            return ResponseEntity.ok().body("{\"token\": \"" + token + "\"}");
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login failed after signup");
+        }
+     } catch(Exception e) {
+        log.error("Signup failed: {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Signup failed. Please try again later.");
+    }
+}
+    
     @PostMapping("/generateToken")
     public ResponseEntity<?> login(@RequestBody AuthRequest authRequest){
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getEmail(),authRequest.getPassword()));
@@ -72,17 +88,3 @@ public class AuthenticationController {
         return "Welcome to Admin Profile";
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

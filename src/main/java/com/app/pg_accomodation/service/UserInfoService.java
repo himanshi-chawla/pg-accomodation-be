@@ -23,6 +23,37 @@ public class UserInfoService implements UserDetailsService {
 
     @Autowired
     PasswordEncoder passwordEncoder;
+     public UserDto registerUser(UserDto userDto) {
+        if (userRepository.existsByEmail(userDto.getEmail())) {
+            throw new RuntimeException("Email already exists!");
+        }
+
+        // Convert UserDto to User entity
+        User newUser = new User();
+        newUser.setUsername(userDto.getUsername());
+        newUser.setFirstName(userDto.getFirstName());
+        newUser.setLastName(userDto.getLastName());
+        newUser.setEmail(userDto.getEmail());
+        newUser.setPhoneNumber(userDto.getPhoneNumber());
+        newUser.setPassword(passwordEncoder.encode(userDto.getPassword())); // Hash password
+        newUser.setRole(userDto.getRole()); 
+
+        // Save user to database
+        User savedUser = userRepository.save(newUser);
+
+        // Convert back to DTO and return
+        
+            UserDto dto = new UserDto();
+             dto.setUsername(savedUser.getUsername());
+             dto.setFirstName(savedUser.getFirstName());
+             dto.setLastName(savedUser.getLastName());
+             dto.setEmail(savedUser.getEmail());
+             dto.setPhoneNumber(savedUser.getPhoneNumber());
+             dto.setRole(savedUser.getRole());
+
+            return dto;
+
+    }
 
     public ResponseEntity<?> signup(UserDto userDto) {
         try {
@@ -37,7 +68,6 @@ public class UserInfoService implements UserDetailsService {
         } catch (Exception e) {
             return new ResponseEntity<>("Error occurred while saving user data.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     }
 
     /**
