@@ -101,4 +101,10 @@ public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNot
         Optional<User> user = userRepository.findByEmail(email);
         return user.map(UserInfoDetails::new).orElseThrow(() -> new UsernameNotFoundException("User not found for email : " + email));
     }
+
+    public User getUserByEmail(String email) {
+    return userRepository.findByEmail(email)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found for email: " + email));
+    }
+
 }

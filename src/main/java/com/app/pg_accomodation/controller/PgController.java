@@ -15,20 +15,20 @@ public class PgController {
     @Autowired
     private PgService pgService;
 
+    @PreAuthorize("hasRole('ROLE_OWNER') or hasRole('ROLE_ADMIN')")
     @PostMapping("/add/{ownerId}")
-    @PreAuthorize("hasRole('OWNER') or hasRole('ADMIN')")
     public PgDto addPg(@PathVariable Long ownerId, @RequestBody PgDto pgDto) {
         return pgService.addPg(ownerId, pgDto);
     }
 
+    @PreAuthorize("hasRole('ROLE_OWNER') or hasRole('ROLE_ADMIN')")
     @PutMapping("/update/{ownerId}/{pgId}")
-    @PreAuthorize("hasRole('OWNER') or hasRole('ADMIN')")
     public PgDto updatePg(@PathVariable Long ownerId, @PathVariable Long pgId, @RequestBody PgDto pgDto) {
         return pgService.updatePg(ownerId, pgId, pgDto);
     }
-
+     
+    @PreAuthorize("hasRole('ROLE_OWNER') or hasRole('ROLE_ADMIN')")
     @DeleteMapping("/delete/{ownerId}/{pgId}")
-    @PreAuthorize("hasRole('OWNER') or hasRole('ADMIN')")
     public void deletePg(@PathVariable Long ownerId, @PathVariable Long pgId) {
         pgService.deletePg(ownerId, pgId);
     }

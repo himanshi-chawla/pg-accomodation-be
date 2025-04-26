@@ -5,24 +5,36 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.springframework.security.core.GrantedAuthority;
 
 @Component
 public class JwtService {
 
     public static final String SECRET = "2332JB423B4HJ23B4H23B4HJ234HJ2B34JB23H4B23H4B2HJ3B4HJ2B4HJ32B4HJ23B5HB2J35BH23J";
 
-    public String generateToken(String email){
-        Map<String,Object> claims = new HashMap<>();
-        return createToken(claims, email);
-    }
+    public String generateToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
+
+    // Add roles to the token
+        claims.put("roles", authorities.stream()
+            .map(GrantedAuthority::getAuthority) // e.g., ROLE_OWNER
+            .collect(Collectors.toList()));
+
+        return createToken(claims, userDetails.getUsername());
+}
 
     // Create a JWT token with specified claims and subject (email)
     private String createToken(Map<String, Object> claims, String email) {
